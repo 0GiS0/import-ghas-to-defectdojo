@@ -13,6 +13,12 @@ name: 🛠️🔍🧬📊 CodeQL Advanced
 
 on:
   workflow_dispatch:
+    inputs:
+      engagement_id:
+        description: 'DefectDojo Engagement ID'
+        required: false
+        default: '1'
+        type: string
   push:
     branches: [ "main" ]
   pull_request:
@@ -24,7 +30,7 @@ on:
 env:
   DEFECTDOJO_PRODUCT_NAME: ghas-alerts-from-api
   DEFECTDOJO_URL: ${{ secrets.DEFECTDOJO_URL }}/api/v2  
-  ENGAGEMENT_ID: 17
+  ENGAGEMENT_ID: ${{ github.event.inputs.engagement_id || '1' }}
 
 jobs:
   analyze:
