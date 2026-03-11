@@ -1,6 +1,12 @@
 name:  ✅🔄🤖📦 Sending Dependabot Security Updates
 
 on:
+    workflow_dispatch:
+      inputs:
+        engagement_id:
+          description: 'DefectDojo Engagement ID'
+          required: false
+          default: '1'
     workflow_run:
         workflows: ["Dependabot Updates"]
         types:
@@ -14,7 +20,7 @@ permissions:
 env:
   DEFECTDOJO_PRODUCT_NAME: ghas-alerts-from-api
   DEFECTDOJO_URL: ${{ secrets.DEFECTDOJO_URL }}/api/v2  
-  ENGAGEMENT_ID: 17
+  ENGAGEMENT_ID: ${{ github.event.inputs.engagement_id || '1' }}
 
 jobs:
     import_depenabot_security_updates:
