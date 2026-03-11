@@ -26,8 +26,7 @@ jobs:
     import_depenabot_security_updates:
         name: Import Dependabot security updates
         runs-on: ubuntu-latest
-        # if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'schedule' }}
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
         steps:
             - name: Generate a token
               id: generate-token
