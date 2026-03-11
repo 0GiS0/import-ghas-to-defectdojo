@@ -15,6 +15,7 @@ Hi developer 👋🏻! This repository is a **Proof of Concept (PoC)** to integr
 - [GitHub Advanced Security (GHAS) - DefectDojo Integration](#github-advanced-security-ghas---defectdojo-integration)
   - [📑 Table of Contents](#-table-of-contents)
   - [✨ Features](#-features)
+  - [🆕 Recent Improvements](#-recent-improvements)
   - [🛠️ Technologies](#️-technologies)
   - [📋 Prerequisites](#-prerequisites)
   - [🚀 Installation](#-installation)
@@ -39,6 +40,17 @@ Hi developer 👋🏻! This repository is a **Proof of Concept (PoC)** to integr
 - **Code Scanning Alerts**: Import CodeQL results using `SARIF` format
 - **Secret Scanning Alerts**: Create findings directly via DefectDojo API
 - **Sample Flask App**: Includes a vulnerable Flask application for testing
+
+## 🆕 Recent Improvements
+
+- **Manual Workflow Triggers**: All workflows now support `workflow_dispatch` for manual execution
+- **Configurable Parameters**:
+  - `engagement_id` input for CodeQL and Dependabot workflows (default: `1`)
+  - `test_id` input for Secret Scanning workflow (default: `1`)
+- **Updated GitHub Actions**:
+  - `actions/checkout` → v6
+  - `actions/upload-artifact` → v7
+  - `github/codeql-action` → v4
 
 ## 🛠️ Technologies
 

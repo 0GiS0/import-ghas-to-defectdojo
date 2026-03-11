@@ -15,6 +15,7 @@
 - [GitHub Advanced Security (GHAS) - Integración con DefectDojo](#github-advanced-security-ghas---integración-con-defectdojo)
   - [📑 Tabla de Contenidos](#-tabla-de-contenidos)
   - [✨ Características](#-características)
+  - [🆕 Mejoras Recientes](#-mejoras-recientes)
   - [🛠️ Tecnologías](#️-tecnologías)
   - [📋 Requisitos Previos](#-requisitos-previos)
   - [🚀 Instalación](#-instalación)
@@ -39,6 +40,17 @@
 - **Alertas de Code Scanning**: Importación de resultados de CodeQL usando formato `SARIF`
 - **Alertas de Secret Scanning**: Creación de hallazgos directamente vía API de DefectDojo
 - **Aplicación Flask de ejemplo**: Incluye una aplicación Flask vulnerable para pruebas
+
+## 🆕 Mejoras Recientes
+
+- **Ejecución manual de workflows**: Todos los workflows ahora soportan `workflow_dispatch` para ejecución manual
+- **Parámetros configurables**:
+  - `engagement_id` para los workflows de CodeQL y Dependabot (por defecto: `1`)
+  - `test_id` para el workflow de Secret Scanning (por defecto: `1`)
+- **GitHub Actions actualizadas**:
+  - `actions/checkout` → v6
+  - `actions/upload-artifact` → v7
+  - `github/codeql-action` → v4
 
 ## 🛠️ Tecnologías
 
