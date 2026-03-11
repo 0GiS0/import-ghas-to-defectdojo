@@ -1,195 +1,205 @@
 # GitHub Advanced Security (GHAS) - DefectDojo Integration
 
-¡Hi developer 👋🏻!
+<div align="center">
 
-This repo is a PoC to integrate GitHub Advanced Security (GHAS) with DefectDojo. I tried to make it as simple as possible, so you can easily adapt it to your needs.
+[![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UC140iBrEZbOtvxWsJ-Tb0lQ?style=for-the-badge&logo=youtube&logoColor=white&color=red)](https://www.youtube.com/c/GiselaTorres?sub_confirmation=1) [![GitHub followers](https://img.shields.io/github/followers/0GiS0?style=for-the-badge&logo=github&logoColor=white)](https://github.com/0GiS0) [![LinkedIn Follow](https://img.shields.io/badge/LinkedIn-Follow-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/giselatorresbuitrago/) [![X Follow](https://img.shields.io/badge/X-Follow-black?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/0GiS0)
 
-## Github Advanced Security (GHAS) alerts
+</div>
 
-GitHub Advanced Security (GHAS) provides three types of alerts:
+---
 
-- Security Updates from Dependabot
-- Code Scanning Alerts
-- Secret Scanning Alerts
+Hi developer 👋🏻! This repository is a **Proof of Concept (PoC)** to integrate **GitHub Advanced Security (GHAS)** with **DefectDojo**. I tried to make it as simple as possible, so you can easily adapt it to your needs.
 
-Today, DefectDojo only supports the import of Code Scanning Alerts (using SARIF import) and Security Updates from Dependabot using the `GitHub Vulnerability Scan` import. In this repo I will show you how to import the three types of alerts using GitHub Actions.
+## 📑 Table of Contents
 
+- [GitHub Advanced Security (GHAS) - DefectDojo Integration](#github-advanced-security-ghas---defectdojo-integration)
+  - [📑 Table of Contents](#-table-of-contents)
+  - [✨ Features](#-features)
+  - [🛠️ Technologies](#️-technologies)
+  - [📋 Prerequisites](#-prerequisites)
+  - [🚀 Installation](#-installation)
+    - [Step 1: Clone this repository](#step-1-clone-this-repository)
+    - [Step 2: Set up DefectDojo](#step-2-set-up-defectdojo)
+    - [Step 3: Create Product and Engagement in DefectDojo](#step-3-create-product-and-engagement-in-defectdojo)
+    - [Step 4: Expose DefectDojo with a tunnel](#step-4-expose-defectdojo-with-a-tunnel)
+    - [Step 5: Configure GitHub Secrets](#step-5-configure-github-secrets)
+    - [Step 6: Create a GitHub App (Optional)](#step-6-create-a-github-app-optional)
+  - [💻 Usage](#-usage)
+    - [Import Dependabot Alerts](#import-dependabot-alerts)
+    - [Import Code Scanning Alerts](#import-code-scanning-alerts)
+    - [Import Secret Scanning Alerts](#import-secret-scanning-alerts)
+  - [📁 Project Structure](#-project-structure)
+  - [🌐 Follow Me](#-follow-me)
 
-## Pre-requisites
+## ✨ Features
 
-For this PoC I clone DefectDojo repo:
+- **Full GHAS Integration**: Import all three types of GitHub Advanced Security alerts into DefectDojo
+- **Automated Workflows**: GitHub Actions workflows ready to use
+- **Dependabot Alerts**: Import using `GitHub Vulnerability Scan` format
+- **Code Scanning Alerts**: Import CodeQL results using `SARIF` format
+- **Secret Scanning Alerts**: Create findings directly via DefectDojo API
+- **Sample Flask App**: Includes a vulnerable Flask application for testing
+
+## 🛠️ Technologies
+
+- **Python 3.8+** - Main programming language
+- **Flask** - Web framework for the sample vulnerable app
+- **GitHub Actions** - CI/CD automation
+- **GitHub Advanced Security** - Security scanning (Dependabot, CodeQL, Secret Scanning)
+- **DefectDojo** - Vulnerability management platform
+- **Docker** - Container support
+
+## 📋 Prerequisites
+
+- [Git](https://git-scm.com/)
+- [Docker](https://www.docker.com/) & Docker Compose
+- [GitHub CLI](https://cli.github.com/) (optional)
+- A GitHub repository with GHAS enabled
+- A GitHub App with `read:security_events` permission (for secrets and dependabot alerts)
+
+## 🚀 Installation
+
+### Step 1: Clone this repository
+
+```bash
+git clone https://github.com/0GiS0/import-ghas-to-defectdojo.git
+cd import-ghas-to-defectdojo
+```
+
+### Step 2: Set up DefectDojo
+
+Clone and run DefectDojo locally:
 
 ```bash
 git clone https://github.com/DefectDojo/django-DefectDojo.git
-```
-
-I run it using Docker:
-
-```bash
+cd django-DefectDojo
 docker compose up
 ```
 
-For this PoC I assume that you have a Product and an Engagement created in DefectDojo. If you don't have them, you can create them using the API. For that I used this file `requests/products_requests.http` to see how the request should look like and this is the result 🤓.
+### Step 3: Create Product and Engagement in DefectDojo
 
+You need a **Product** and an **Engagement** created in DefectDojo. You can create them using the API. Check the file `requests/create_defectDojo_artifacts.http` for examples.
 
-Last but not least you need to expose it using some tunnel, for example [pinggy.io](https://pinggy.io/) or [ngrok](https://ngrok.com/). I used pinggy.io and the command:
+### Step 4: Expose DefectDojo with a tunnel
+
+Use a tunneling service like [pinggy.io](https://pinggy.io/) or [ngrok](https://ngrok.com/):
 
 ```bash
+# Using pinggy.io
 ssh -p 443 -R0:localhost:8080 qr@a.pinggy.io
+
+# Using ngrok
+ngrok http 8080
 ```
 
-And then I add a secret to my repo called `DEFECTDOJO_URL`with the URL that the tunnel exposes. I also added a secret called `DEFECTDOJO_TOKEN` with the DefectDojo API token. You can create a DefectDojo API token in your user profile.
+### Step 5: Configure GitHub Secrets
 
-Congratulations! You are ready to go! 🎉
+Add the following secrets to your GitHub repository:
 
-## GitHub App for get secrets and dependabot alerts
+| Secret | Description |
+|--------|-------------|
+| `DEFECTDOJO_URL` | The URL exposed by the tunnel |
+| `DEFECTDOJO_TOKEN` | DefectDojo API token (create it in your user profile) |
 
-To get the secrets and dependabot alerts we need to create a GitHub App. You can follow the steps in this [link](https://docs.github.com/en/developers/apps/building-github-apps/creating-a-github-app). The only thing you need to do is to add the `read:security_events` permission to the app.
+### Step 6: Create a GitHub App (Optional)
 
+To get secrets and dependabot alerts, create a GitHub App with the `read:security_events` permission. Follow the [official documentation](https://docs.github.com/en/developers/apps/building-github-apps/creating-a-github-app).
 
-## Import Dependabot alerts
+🎉 **Congratulations! You are ready to go!**
 
-To import Dependabot alerts, we will use the `GitHub Vulnerability Scan` import. This import is available in DefectDojo since version 2.4.0. I did some reseach using this file `requests/ghas_alerts_requests.http`to see how the query should look like and this is the result:
+## 💻 Usage
 
-```
-POST https://api.github.com/graphql
-Content-Type: application/json
-Authorization: Bearer {{ PAT }}
-X-REQUEST-TYPE: GraphQL
+### Import Dependabot Alerts
 
-query ($name: String!, $owner: String!) {  
-  repository(owner: $owner, name: $name) {
-    nameWithOwner
-    url
-    vulnerabilityAlerts(first: 20) {
-      totalCount
-      nodes {
-        id
-        number
-        createdAt
-        state
-        vulnerableManifestPath
-        vulnerableRequirements        
-        securityVulnerability {
-          package {
-            name
-          }
-          advisory {
-            severity
-            summary
-            description
-            references{
-              url
-            }
-            identifiers {
-              type
-              value
-            }
-            cvss {
-              score     
-              vectorString        
-            }
-            cwes(first: 5) {              
-              nodes {
-                cweId
-                name
-                description
-              }
-            }
-          }
-        }        
-      }
-    }
-    nameWithOwner
-    url
-  }
-}
+Dependabot alerts are imported using the `GitHub Vulnerability Scan` format (available since DefectDojo 2.4.0).
 
-{
-    "name": "{{ REPO_NAME }}",
-    "owner": "{{ OWNER }}"
-}
+The workflow `.github/workflows/send_dependabot_security_alerts.yml` retrieves alerts via GraphQL API and sends them to DefectDojo:
+
+```bash
+curl -X POST "$DEFECTDOJO_URL/import-scan/" \
+  -H "Authorization: Token $DEFECTDOJO_TOKEN" \
+  -F 'product_name=YOUR_PRODUCT_NAME' \
+  -F 'engagement=ENGAGEMENT_ID' \
+  -F 'scan_type=Github Vulnerability Scan' \
+  -F 'file=@dependabot-security-alerts.json'
 ```
 
-With that I created a GitHub Actions workflow that will run every time the Dependabot Updates workflow is triggered. You can see the workflow in the `.github/workflows/after_dependabot_updates.yml` file.
+### Import Code Scanning Alerts
 
-Once we have the alert we need to use DefectDojo API to import the alert. The API endpoint is `/api/v2/import-scan/`. The request should look like this:
+Code Scanning alerts (CodeQL) are imported using the `SARIF` format.
 
-```
- curl -X POST "${{ env.DEFECTDOJO_URL }}/import-scan/" \
-   -H "Authorization: Token ${{ secrets.DEFECTDOJO_TOKEN }}" \
-   -F 'product_name=${{ env.DEFECTDOJO_PRODUCT_NAME }}' \
-   -F 'engagement=${{ env.ENGAGEMENT_ID }}' \
-   -F 'scan_type="Github Vulnerability Scan"' \
-   -F 'file=@dependabot-security-alerts.json'
-```
+The workflow `.github/workflows/codeql_and_defectdojo.yml` runs CodeQL analysis and uploads results:
 
-As you can seee the `scan_type` is `Github Vulnerability Scan`, we need the `product_name` and the `engagement` id. The `product_name` is the name of the product in DefectDojo and the `engagement` id is the id of the engagement in DefectDojo. You can get the engagement id using the `/api/v2/engagements/` endpoint.
-
-
-# Import Code Scanning Alerts
-
-Although there is no an specific import for Code Scanning Alerts, we can use the `SARIF` import. In this repo, everytime the CodeQL workflow is triggered, we upload the SARIF file to DefectDojo. The workflow is in the `.github/workflows/codeql_and_defectdojo.yml` file. The upload is done using the `/api/v2/import-scan/` endpoint. The request should look like this:
-
-```
-    - name: Upload Results to DefectDojo
-      run: |
-        curl -X POST "${{ env.DEFECTDOJO_URL }}/import-scan/" \
-        -H "Authorization: Token ${{ secrets.DEFECTDOJO_TOKEN }}" \
-        -F 'product_name=${{ env.DEFECTDOJO_PRODUCT_NAME }}' \
-        -F 'engagement=${{ env.ENGAGEMENT_ID }}' \
-        -F 'scan_type="SARIF"' \
-        -F 'file=@/home/runner/work/${{ env.REPO_NAME }}/results/${{matrix.language}}.sarif'
-
-``` 
-
-In this case the `scan_type` is `SARIF`, we need the `product_name` and the `engagement` id. The `product_name` is the name of the product in DefectDojo and the `engagement` id is the id of the engagement in DefectDojo. You can get the engagement id using the `/api/v2/engagements/` endpoint.
-
-# Import Secret Scanning Alerts
-
-To import Secret Scanning Alerts, we cannot use an import but we can create the finding directly. The workflow is in the `.github/workflows/codeql_and_defectdojo.yml` file. What I am doing is getting the secrets alerts using the REST API:
-
-```
-      - name: Get secrets
-        run: |
-          curl  \
-          --url https://api.github.com/repos/${{ github.repository }}/secret-scanning/alerts \
-          --header "Authorization: Bearer ${{ steps.generate-token.outputs.token }}" \
-          --header 'content-type: application/json' > secrets.json
+```bash
+curl -X POST "$DEFECTDOJO_URL/import-scan/" \
+  -H "Authorization: Token $DEFECTDOJO_TOKEN" \
+  -F 'product_name=YOUR_PRODUCT_NAME' \
+  -F 'engagement=ENGAGEMENT_ID' \
+  -F 'scan_type=SARIF' \
+  -F 'file=@results/python.sarif'
 ```
 
-And then I format the alerts to the DefectDojo format using jq:
+### Import Secret Scanning Alerts
+
+Secret Scanning alerts are created directly as findings via the DefectDojo API.
+
+The workflow `.github/workflows/send_secrets_to_defectdojo.yml`:
+
+1. **Fetches secrets** from GitHub REST API
+2. **Transforms** the data to DefectDojo format using `jq`
+3. **Creates findings** via POST to `/api/v2/findings/`
+
+```bash
+# Get secrets from GitHub
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.github.com/repos/OWNER/REPO/secret-scanning/alerts > secrets.json
+
+# Transform and send to DefectDojo
+curl -X POST "$DEFECTDOJO_URL/findings/" \
+  -H "Authorization: Token $DEFECTDOJO_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$FINDING_DATA"
+```
+
+## 📁 Project Structure
 
 ```
-      - name: Convert secrets to a valid json
-        run: |
-          JSON=$(cat secrets.json | jq -c --arg TEST_ID "$TEST_ID" --arg TEST_TYPE_ID "$TEST_TYPE_ID_FOR_SECRET_SCANNING" 'map({title: (.secret_type_display_name + " " + .secret[0:15]), description: (.secret + "\nValidity: " + .validity + "\nPublicly leaked: " + (.publicly_leaked | tostring)), severity: "Critical", found_by: [($TEST_TYPE_ID | tonumber)], test: ($TEST_ID | tonumber), active: .publicly_leaked, verified: false, numerical_severity: 3})')
-          echo $JSON > secrets-to-defectdojo.json
-
+import-ghas-to-defectdojo/
+├── .github/
+│   ├── dependabot.yml
+│   └── workflows/
+│       ├── codeql_and_defectdojo.yml      # CodeQL + SARIF upload
+│       ├── get_alerts.yml                  # Get GHAS alerts
+│       ├── send_dependabot_security_alerts.yml
+│       └── send_secrets_to_defectdojo.yml
+├── flask_webgoat/                          # Sample vulnerable Flask app
+│   ├── actions.py
+│   ├── auth.py
+│   ├── status.py
+│   ├── ui.py
+│   ├── users.py
+│   └── templates/
+├── requests/                               # HTTP request examples
+│   ├── create_defectDojo_artifacts.http
+│   ├── defectDojo.http
+│   ├── ghas_alerts_requests.http
+│   └── send_*.http
+├── app.py
+├── Dockerfile
+├── requirements.txt
+└── README.md
 ```
 
+## 🌐 Follow Me
 
-and then we send them to DefectDojo:
+If you found this project useful, don't forget to follow me on my social networks:
 
-```
+<div align="center">
 
-      - name: Send them to DefectDojo
-        run: |
+[![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UC140iBrEZbOtvxWsJ-Tb0lQ?style=for-the-badge&logo=youtube&logoColor=white&color=red)](https://www.youtube.com/c/GiselaTorres?sub_confirmation=1) [![GitHub followers](https://img.shields.io/github/followers/0GiS0?style=for-the-badge&logo=github&logoColor=white)](https://github.com/0GiS0) [![LinkedIn Follow](https://img.shields.io/badge/LinkedIn-Follow-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/giselatorresbuitrago/) [![X Follow](https://img.shields.io/badge/X-Follow-black?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/0GiS0)
 
-          # Iterate for each secret
+</div>
 
-          for secret in $(jq -r '. | keys | .[]' secrets-to-defectdojo.json); do
-
-            echo "Sending secret # $secret"
-            echo "$(jq -c ".[$secret]" secrets-to-defectdojo.json)"
-            DATA=$(jq -c ".[$secret]" secrets-to-defectdojo.json)
-
-            curl --request POST --url ${{ env.DEFECTDOJO_URL }}/findings/ \
-            --header "authorization: Token ${{ secrets.DEFECTDOJO_TOKEN }}" \
-            --header 'content-type: application/json' \
-            --data "$DATA"
-
-          done
-```
+---
 
 Happy hacking! 🐱‍👤
