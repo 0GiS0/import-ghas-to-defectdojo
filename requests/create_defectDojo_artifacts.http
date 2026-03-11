@@ -1,7 +1,7 @@
 // Variables
 @baseUrl = http://localhost:8080/api/v2
 
-@token = 2126ab9137fba34eeb7cc3e48509db52fbca911d
+@token = 3060b62a0d94b990d4e2c0c9acbae96eae413b4e
 
 @productName = "ghas-alerts-from-api"
 
@@ -37,15 +37,16 @@ Content-Type: application/json
   "name": "github-actions",
   "description": {{productName}},
   "engagement_type": "CI/CD",
-  "target_start": "2025-02-20",
-  "target_end": "2025-02-20"
+  "target_start": "{{$datetime 'YYYY-MM-DD'}}",
+  "target_end": "{{$datetime 'YYYY-MM-DD' 1 M}}"
 }
 
 ###
 @engagementId = {{ addEngagement.response.body.id }}
 
+###
 
-// For the secrets you'll need to create  a new test type.
+// For the secrets you'll need to create a new test type.
 
 # @name addTestType
 POST {{baseUrl}}/test_types/
@@ -53,11 +54,12 @@ Authorization: Token {{token}}
 Content-Type: application/json
 
 {
-  "name": "GitHub Advanced Security - Secret Scanning",
-  "description": "GitHub Advanced Security - Secret Scanning",
-  "static_tool": true,
-  "active": true 
+    "name": "GHAS Secret Scanning",
+    "static_tool": true,
+    "active": true
 }
+
+###
 
 @testTypeId = {{ addTestType.response.body.id }}
 
@@ -71,11 +73,11 @@ Authorization: Token {{token}}
 Content-Type: application/json
 
 {
-  "title": "GitHub Advanced Security - Secret Scanning", 
+  "title": "GitHub Advanced Security - Secret Scanning",
   "engagement": {{engagementId}},
   "test_type": {{testTypeId}},
-  "target_start": "2025-02-20",
-  "target_end": "2025-02-20"
+  "target_start": "{{$datetime 'YYYY-MM-DD'}}",
+  "target_end": "{{$datetime 'YYYY-MM-DD' 1 M}}"
 }
 
 ###

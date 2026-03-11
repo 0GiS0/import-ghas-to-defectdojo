@@ -73,8 +73,11 @@ Clone and run DefectDojo locally:
 ```bash
 git clone https://github.com/DefectDojo/django-DefectDojo.git
 cd django-DefectDojo
-docker compose up
+docker compose up -d
+docker compose logs initializer | grep "Admin password:"
 ```
+
+Then you can log in to DefectDojo at `http://localhost:8080` with username `admin` and the password from the logs.
 
 ### Step 3: Create Product and Engagement in DefectDojo
 

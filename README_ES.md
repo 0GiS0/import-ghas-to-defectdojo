@@ -12,16 +12,24 @@
 
 ## 📑 Tabla de Contenidos
 
-- [Características](#-características)
-- [Tecnologías](#️-tecnologías)
-- [Requisitos Previos](#-requisitos-previos)
-- [Instalación](#-instalación)
-- [Uso](#-uso)
-  - [Importar Alertas de Dependabot](#importar-alertas-de-dependabot)
-  - [Importar Alertas de Code Scanning](#importar-alertas-de-code-scanning)
-  - [Importar Alertas de Secret Scanning](#importar-alertas-de-secret-scanning)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Sígueme](#-sígueme-en-mis-redes-sociales)
+- [GitHub Advanced Security (GHAS) - Integración con DefectDojo](#github-advanced-security-ghas---integración-con-defectdojo)
+  - [📑 Tabla de Contenidos](#-tabla-de-contenidos)
+  - [✨ Características](#-características)
+  - [🛠️ Tecnologías](#️-tecnologías)
+  - [📋 Requisitos Previos](#-requisitos-previos)
+  - [🚀 Instalación](#-instalación)
+    - [Paso 1: Clonar este repositorio](#paso-1-clonar-este-repositorio)
+    - [Paso 2: Configurar DefectDojo](#paso-2-configurar-defectdojo)
+    - [Paso 3: Crear Producto y Engagement en DefectDojo](#paso-3-crear-producto-y-engagement-en-defectdojo)
+    - [Paso 4: Exponer DefectDojo con un túnel](#paso-4-exponer-defectdojo-con-un-túnel)
+    - [Paso 5: Configurar Secrets en GitHub](#paso-5-configurar-secrets-en-github)
+    - [Paso 6: Crear una GitHub App (Opcional)](#paso-6-crear-una-github-app-opcional)
+  - [💻 Uso](#-uso)
+    - [Importar Alertas de Dependabot](#importar-alertas-de-dependabot)
+    - [Importar Alertas de Code Scanning](#importar-alertas-de-code-scanning)
+    - [Importar Alertas de Secret Scanning](#importar-alertas-de-secret-scanning)
+  - [📁 Estructura del Proyecto](#-estructura-del-proyecto)
+  - [🌐 Sígueme en Mis Redes Sociales](#-sígueme-en-mis-redes-sociales)
 
 ## ✨ Características
 
@@ -65,8 +73,11 @@ Clona y ejecuta DefectDojo localmente:
 ```bash
 git clone https://github.com/DefectDojo/django-DefectDojo.git
 cd django-DefectDojo
-docker compose up
+docker compose up -d
+docker compose logs initializer | grep "Admin password:"
 ```
+
+Después puedes acceder a DefectDojo en `http://localhost:8080` con el usuario `admin` y la contraseña que aparece en los logs.
 
 ### Paso 3: Crear Producto y Engagement en DefectDojo
 
@@ -92,6 +103,15 @@ Añade los siguientes secrets a tu repositorio de GitHub:
 |--------|-------------|
 | `DEFECTDOJO_URL` | La URL expuesta por el túnel |
 | `DEFECTDOJO_TOKEN` | Token de API de DefectDojo (créalo en tu perfil de usuario) |
+
+Puedes hacerlo de forma sencilla usando la GitHub CLI:
+
+```bash
+gh secret set DEFECTDOJO_URL -b "http://bshzi-95-61-255-152.a.free.pinggy.link"
+gh secret set DEFECTDOJO_TOKEN -b "3060b62a0d94b990d4e2c0c9acbae96eae413b4e"
+```
+
+Para generar el token de API en DefectDojo, ve a tu perfil de usuario (en la esquina superior derecha) y verás tu Api Key. Cópiala y úsala como valor para `DEFECTDOJO_TOKEN`.
 
 ### Paso 6: Crear una GitHub App (Opcional)
 
